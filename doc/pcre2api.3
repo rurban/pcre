@@ -1348,6 +1348,13 @@ sequence at the start of the pattern, as described in the section entitled
 in the \fBpcre2pattern\fP documentation. A default is defined when PCRE2 is
 built.
 .sp
+  PCRE2_EXTENDED_MORE
+.sp
+If this bit is set, the space and horizontal tab white space characters in
+the pattern are also ignored inside a character class. PCRE2_EXTENDED_MORE is
+equivalent to Perl's 5.26 /xx option, and it can be changed within a pattern
+by a (?xx) option setting.
+.sp
   PCRE2_FIRSTLINE
 .sp
 If this option is set, an unanchored pattern is required to match before or at

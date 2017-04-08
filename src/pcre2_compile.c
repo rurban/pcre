@@ -700,7 +700,7 @@ static int posix_substitutes[] = {
    PCRE2_NEVER_UCP|PCRE2_NEVER_UTF|PCRE2_NO_AUTO_CAPTURE| \
    PCRE2_NO_AUTO_POSSESS|PCRE2_NO_DOTSTAR_ANCHOR|PCRE2_NO_START_OPTIMIZE| \
    PCRE2_NO_UTF_CHECK|PCRE2_UCP|PCRE2_UNGREEDY|PCRE2_USE_OFFSET_LIMIT| \
-   PCRE2_UTF)
+   PCRE2_UTF|PCRE2_EXTENDED_MORE)
 
 /* Compile time error code numbers. They are given names so that they can more
 easily be tracked. When a new number is added, the tables called eint1 and
@@ -2926,6 +2926,14 @@ while (ptr < ptrend)
         negate_class = TRUE;
       else break;
       }
+
+      /* Skip over whitespace comments in extended_more mode. */
+
+      if ((options & PCRE2_EXTENDED_MORE) &&
+          (c == CHAR_SPACE || c == CHAR_HT)) /* only these 2? */
+        {
+        ptr++;
+        }
 
     /* Now the real contents of the class; c has the first "real" character.
     Empty classes are permitted only if the option is set. */
