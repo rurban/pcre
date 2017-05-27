@@ -1,0 +1,45 @@
+language: c
+sudo: false
+
+matrix:
+  include:
+    - os: linux
+      env: CC=clang
+    - os: linux
+      env: CONF=-DBUILD_SHARED_LIBS=ON MAKE=cmake CC=gcc 
+    - os: linux
+      env: CONF=-DBUILD_SHARED_LIBS=OFF MAKE=cmake CC=gcc
+    - os: linux
+      env: CONF=--enable-pcre2-16
+    - os: linux
+      env: CONF=--enable-pcre2-32
+    - os: linux
+      env: CONF="--enable-debug --disable-jit"
+    - os: linux
+      env: CONF=--disable-shared
+    #- os: osx
+    #  env: CC=cc
+    #- os: osx
+    #  env: CMAKE=1
+  # cmake conf is broken
+  allow_failures:
+    - env: CONF=-DBUILD_SHARED_LIBS=ON MAKE=cmake CC=gcc
+    - env: CONF=-DBUILD_SHARED_LIBS=OFF MAKE=cmake CC=gcc
+    - env: MAKE=cmake
+
+# mkdir $HOME/usr;
+# export PATH="$HOME/usr/bin:$PATH";
+# wget https://cmake.org/files/v3.8/cmake-3.8.1-Linux-x86_64.sh;
+# chmod +x cmake-3.8.1-Linux-x86_64.sh;
+# ./cmake-3.8.1-Linux-x86_64.sh --prefix=$HOME/usr --exclude-subdir --skip-license;
+  
+script:
+  - if [ "$MAKE" = "cmake" ]; then
+      cmake --version;
+      cmake $CONF -DPCRE2_SUPPORT_JIT=ON . && make -j4 -s && make test;
+    else
+      ./autogen.sh;
+      (./configure --enable-jit --enable-pcre2grep-libz
+         --enable-pcre2grep-libbz2 $CONF && make -s -j4 all && make -s check) ||
+        (cat ./test-suite.log; false)
+    fi
